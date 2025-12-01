@@ -1,0 +1,24 @@
+table.dataTable tr:hover {
+    cursor: pointer;
+}
+
+.select2 {
+	width:100% !important;
+}
+
+#logout-btn {
+    color: #fff;
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+#logout-btn:hover {
+    background-color: #bd2130;
+    border-color: #b21f2d;
+}
+
+/*
+.select2 span.select2-selection{
+    height: calc(2.25rem + 2px);
+}
+*/
