@@ -121,6 +121,12 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
+             <a id="m_registro_vr" href="<?php echo $functions->direct_paginas()."facturacion/registro-venta-rapida" ?>" class="nav-link">
+              <i class="nav-icon fas fa-cash-register text-success"></i>
+              <p>Venta Rápida</p>
+              </a>
+               </li>
+              <li class="nav-item">
                 <a id="m_registro_factura" href="<?php echo $functions->direct_paginas()."facturacion/registro-factura" ?>" class="nav-link">
                   <i class="nav-icon far fa-circle text-danger"></i>
                   <p>Registro de Factura</p>
