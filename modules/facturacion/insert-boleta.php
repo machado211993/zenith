@@ -5,6 +5,19 @@ if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQ
 
     require '../../global/connection.php';
 
+    // --- INICIO: VERIFICAR SI LA CAJA ESTÁ ABIERTA ---
+    $sql_jornada_check = "SELECT jornada_id FROM caja_jornadas WHERE estado = 'ABIERTA' ORDER BY id DESC LIMIT 1";
+    $stmt_jornada_check = $pdo->prepare($sql_jornada_check);
+    $stmt_jornada_check->execute();
+    $jornada_abierta = $stmt_jornada_check->fetch(PDO::FETCH_ASSOC);
+
+    if (!$jornada_abierta) {
+        echo "ERROR_CAJA_CERRADA";
+        exit; // Detener la ejecución si no hay jornada abierta
+    }
+    $jornada_id_actual = $jornada_abierta['jornada_id'];
+    // --- FIN: VERIFICAR SI LA CAJA ESTÁ ABIERTA ---
+
     $f_faccod = "";
     $f_series = $_POST['facturacion_series'];
 
@@ -58,6 +71,17 @@ if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQ
         while ($LMI = $LSTMAXID->fetch()) {
             $id_facturacion = $LMI["MAXID"];
         }
+
+        // --- INICIO: REGISTRAR MOVIMIENTO DE INGRESO EN CAJA ---
+        // La jornada_id ya fue verificada y obtenida al inicio del script.
+        $descripcion_caja = "Ingreso por Boleta: " . $f_series . "-" . $f_faccod;
+        
+        $sql_mov = "INSERT INTO movimientos_caja (fecha, tipo, monto, descripcion, usuario_id, jornada_id, metodo_pago) 
+                    VALUES (NOW(), 'INGRESO', ?, ?, ?, ?, 'CONTADO')";
+        $stmt_mov = $pdo->prepare($sql_mov);
+        $stmt_mov->execute([$f_totalneto, $descripcion_caja, $f_user_id, $jornada_id_actual]);
+        // --- FIN: REGISTRAR MOVIMIENTO DE INGRESO EN CAJA ---
+
     } else {
         echo "ERROR";
     }

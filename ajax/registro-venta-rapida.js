@@ -344,7 +344,18 @@ $("#FRM_INSERT_FACTURA_RAPIDA").submit(function (e) {
       });
     },
     success: function (data) {
-      if (data == "ERROR") {
+      var response = $.trim(data);
+      if (response == "ERROR_CAJA_CERRADA") {
+        $.Notification.notify(
+          "error",
+          "top center",
+          "Error: Caja Cerrada",
+          "No se puede registrar la venta porque la caja está cerrada. Por favor, inicie una jornada de caja."
+        );
+        Swal.close();
+        return;
+      }
+      if (response == "ERROR") {
         $.Notification.notify(
           "error",
           "bottom-right",
@@ -352,7 +363,7 @@ $("#FRM_INSERT_FACTURA_RAPIDA").submit(function (e) {
           "No se pudo guardar la venta"
         );
         Swal.close();
-      } else if (data == "OK_INSERT") {
+      } else if (response == "OK_INSERT") {
         $.Notification.notify(
           "success",
           "bottom-right",
@@ -368,6 +379,11 @@ $("#FRM_INSERT_FACTURA_RAPIDA").submit(function (e) {
         }, 1000);
       }
     },
+    error: function(jqXHR, textStatus, errorThrown) {
+      Swal.close(); // ¡Importante! Cerrar el diálogo de carga
+      alert('La petición AJAX falló. Razón: ' + textStatus + '\nError: ' + errorThrown);
+      console.log(jqXHR);
+    }
   });
 });
 

@@ -691,8 +691,19 @@ $("#FRM_INSERT_FACTURA").submit(function (e) {
       });
     },
     success: function (data) {
+      var response = $.trim(data);
+      if (response == "ERROR_CAJA_CERRADA") {
+        $.Notification.notify(
+          "error",
+          "top center",
+          "Error: Caja Cerrada",
+          "No se puede registrar la venta porque la caja está cerrada. Por favor, inicie una jornada de caja."
+        );
+        Swal.close();
+        return;
+      }
       //console.log(data);
-      if (data == "ERROR") {
+      if (response == "ERROR") {
         $.Notification.notify(
           "error",
           "bottom-right",
@@ -700,7 +711,7 @@ $("#FRM_INSERT_FACTURA").submit(function (e) {
           "No se pudo guardar la boleta"
         );
         Swal.close();
-      } else if (data == "OK_INSERT") {
+      } else if (response == "OK_INSERT") {
         $('input[name="facturacion_valcliente"]').val("");
         $('input[name="facturacion_fecha"]').focus();
         $.Notification.notify(
