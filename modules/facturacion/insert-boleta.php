@@ -31,14 +31,14 @@ if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQ
 
     $f_currency = $_POST['facturacion_tipmon'];
     $f_clifecentreg = date("Y-m-d", strtotime($_POST['facturacion_fecentrega']));
-    $f_porcdesc = $_POST['facturacion_porcdesc'] == "" ? 0 : $_POST['facturacion_porcdesc'];
-    $f_valdesc = $_POST['facturacion_cantdesc'];
+    $f_porcdesc = $_POST['facturacion_porcdesc'] ?? 0;
+    $f_valdesc = $_POST['facturacion_cantdesc'] ?? 0;
     $f_diaspag = $_POST['facturacion_formpago'];
 
     $f_fecha = date("Y-m-d", strtotime($_POST['facturacion_fecha']));
     $f_subtotal = $_POST['facturacion_opergrab'];
     $f_totalneto = $_POST['facturacion_total'];
-    $f_taxigv = $_POST['facturacion_igv'];
+    $f_taxigv = $_POST['facturacion_igv'] ?? 0.00;
     $f_lst_prods = $_POST['facturacion_prods'];
     $f_lst_prods = json_decode($f_lst_prods);
     $f_estado = $_POST["facturacion_estado"];

@@ -32,7 +32,7 @@ if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQ
             $v_formpago = $_POST['vrapida_formpago'];
             
             $v_opergrab = $_POST['vrapida_opergrab'];
-            $v_igv = $_POST['vrapida_igv'];
+            $v_igv = $_POST['vrapida_igv'] ?? 0.00;
             $v_total = $_POST['vrapida_total'];
             
             $v_lst_prods = $_POST['vrapida_prods'];

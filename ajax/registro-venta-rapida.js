@@ -153,60 +153,65 @@ tbl_prodrapida.columns([0]).visible(false);
 
 // Agregar producto a la tabla
 $("#btn-add-prodtofactura-rapida").click(function () {
-  idprod = $('select[name="vrapida_producto"]').val();
-  cod_prod = $('input[name="vrapida_codeprod"]').val();
-  producto = $('input[name="vrapida_nameprod"]').val();
-  descripcion = $('input[name="vrapida_proddesc"]').val();
-  precio = parseFloat($('input[name="vrapida_prodprecio"]').val());
-  cantidad = parseInt($('input[name="vrapida_prodcant"]').val());
-  importe = precio * cantidad;
-  var importe_actual = importe;
+  var idprod = $('select[name="vrapida_producto"]').val();
+  var cod_prod = $('input[name="vrapida_codeprod"]').val();
+  var producto = $('input[name="vrapida_nameprod"]').val();
+  var descripcion = $('input[name="vrapida_proddesc"]').val();
+  var precio = parseFloat($('input[name="vrapida_prodprecio"]').val());
+  var cantidad_a_agregar = parseInt($('input[name="vrapida_prodcant"]').val());
 
-  if (idprod != "" && cantidad != "" && cantidad > 0) {
+  if (idprod != "" && cantidad_a_agregar > 0) {
     $("#btn-add-prodtofactura-rapida").prop("disabled", true);
 
-    tbl_prodrapida
-      .rows(function (idx, data, node) {
-        old_importe = data[6];
-        old_cantidad = parseInt(data[5]);
-        if (data[2] === producto) {
-          importe += old_importe;
-          cantidad += old_cantidad;
-        }
-        return data[2] === producto;
-      })
-      .remove()
-      .draw();
+    var existing_row = tbl_prodrapida
+      .rows()
+      .data()
+      .toArray()
+      .find((row) => row[0] == idprod);
 
-    tbl_prodrapida.rows
-      .add([
-        {
-          0: idprod,
-          1: cod_prod,
-          2: producto,
-          3: descripcion,
-          4: precio.toFixed(2),
-          5: cantidad,
-          6: importe.toFixed(2),
-        },
-      ])
-      .draw();
+    if (existing_row) {
+      // Si el producto ya existe, actualiza la cantidad y el importe
+      tbl_prodrapida
+        .rows(function (idx, data, node) {
+          return data[0] == idprod;
+        })
+        .every(function () {
+          var d = this.data();
+          var nueva_cantidad = parseInt(d[5]) + cantidad_a_agregar;
+          d[5] = nueva_cantidad;
+          d[6] = (precio * nueva_cantidad).toFixed(2);
+          this.data(d);
+        })
+        .draw(false); // usamos draw(false) para no resetear el paginado
+    } else {
+      // Si es un producto nuevo, lo agrega a la tabla
+      var importe = precio * cantidad_a_agregar;
+      tbl_prodrapida.rows
+        .add([
+          {
+            0: idprod,
+            1: cod_prod,
+            2: producto,
+            3: descripcion,
+            4: precio.toFixed(2),
+            5: cantidad_a_agregar,
+            6: importe.toFixed(2),
+          },
+        ])
+        .draw();
+    }
 
-    tbl_data = tbl_prodrapida.rows().data().toArray();
+    // Recalcular totales generales
+    var importe_total_tabla = 0;
+    tbl_prodrapida.rows().data().each(function (value, index) {
+      importe_total_tabla += parseFloat(value[6]);
+    });
 
-    opergrab =
-      $('input[name="vrapida_opergrab"]').val() != ""
-        ? $('input[name="vrapida_opergrab"]').val()
-        : 0;
-    importe_totactual = parseFloat(opergrab);
-    importe_totactual += importe_actual;
-    new_igv = importe_totactual * 0.18;
-    new_total = importe_totactual + new_igv;
-
+    var new_total = importe_total_tabla; // El total ahora es el subtotal
     total_temporal = new_total;
 
-    $('input[name="vrapida_opergrab"]').val(importe_totactual.toFixed(2));
-    $('input[name="vrapida_igv"]').val(new_igv.toFixed(2));
+    $('input[name="vrapida_opergrab"]').val(importe_total_tabla.toFixed(2));
+    $('input[name="vrapida_igv"]').val("0.00");
     $('input[name="vrapida_total"]').val(new_total.toFixed(2));
 
     // Recalcular vuelto si ya hay un monto ingresado
@@ -222,6 +227,7 @@ $("#btn-add-prodtofactura-rapida").click(function () {
       "El producto ha sido agregado correctamente"
     );
 
+    var tbl_data = tbl_prodrapida.rows().data().toArray();
     if (tbl_data.length > 0) {
       $("#btn-save-factura-rapida").prop("disabled", false);
     } else {
@@ -234,7 +240,7 @@ $("#btn-add-prodtofactura-rapida").click(function () {
       "error",
       "bottom-right",
       "Error al añadir",
-      "Seleccione un producto de la lista"
+      "Seleccione un producto de la lista y/o ingrese una cantidad válida"
     );
   }
 });
@@ -253,13 +259,12 @@ $("#table-products-rapida").on("dblclick", "tr", function () {
       : 0;
   importe_totactual = parseFloat(opergrab);
   importe_totactual -= importe_prod;
-  new_igv = importe_totactual * 0.18;
-  new_total = importe_totactual + new_igv;
+  new_total = importe_totactual;
 
   total_temporal = new_total;
 
   $('input[name="vrapida_opergrab"]').val(importe_totactual.toFixed(2));
-  $('input[name="vrapida_igv"]').val(new_igv.toFixed(2));
+  $('input[name="vrapida_igv"]').val("0.00");
   $('input[name="vrapida_total"]').val(new_total.toFixed(2));
 
   // Recalcular vuelto si ya hay un monto ingresado

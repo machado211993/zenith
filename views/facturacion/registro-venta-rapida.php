@@ -181,14 +181,6 @@
                                     </div>
                                     <div class="row mb-2">
                                         <div class="col-md-6 text-right">
-                                            <strong>IGV 18%:</strong>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <input type="number" name="vrapida_igv" step="0.01" class="form-control text-right" value="0.00" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-md-6 text-right">
                                             <strong class="text-lg">TOTAL:</strong>
                                         </div>
                                         <div class="col-md-6">

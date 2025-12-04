@@ -125,7 +125,7 @@ $.post(
 
 $('select[name="facturacion_producto"]').on("change", function () {
   DATA_ID = $(this).val();
-  $('input[name="facturacion_prodcant"]').val(0);
+  $('input[name="facturacion_prodcant"]').val(1);
   $('input[name="facturacion_nameprod"]').val("");
   $('input[name="facturacion_proddesc"]').val("");
   $('input[name="facturacion_prodprecio"]').val("");
@@ -144,6 +144,10 @@ $('select[name="facturacion_producto"]').on("change", function () {
         $('input[name="facturacion_proddesc"]').val(mydata[0]["DESCRIPTION"]);
         $('input[name="facturacion_prodprecio"]').val(mydata[0]["PRECIO"]);
         $('input[name="facturacion_stockprod"]').val(mydata[0]["CANTIDAD"]);
+        
+        // Disparar el evento change en la cantidad para revalidar el stock
+        $('input[name="facturacion_prodcant"]').trigger("change");
+
         if (stock_producto <= 0) {
           $.Notification.notify(
             "error",
@@ -215,63 +219,72 @@ tbl_prodfactura.columns([0]).visible(false);
 var tbl_data = "";
 
 $("#btn-add-prodtofactura").click(function () {
-  idprod = $('select[name="facturacion_producto"]').val();
-  cod_prod = $('input[name="facturacion_codeprod"]').val();
-  producto = $('input[name="facturacion_nameprod"]').val();
-  descripcion = $('input[name="facturacion_proddesc"]').val();
-  precio = parseFloat($('input[name="facturacion_prodprecio"]').val());
-  cantidad = parseInt($('input[name="facturacion_prodcant"]').val());
-  importe = precio * cantidad;
-  var importe_actual = importe;
+  var idprod = $('select[name="facturacion_producto"]').val();
+  var cod_prod = $('input[name="facturacion_codeprod"]').val();
+  var producto = $('input[name="facturacion_nameprod"]').val();
+  var descripcion = $('input[name="facturacion_proddesc"]').val();
+  var precio = parseFloat($('input[name="facturacion_prodprecio"]').val()) || 0;
+  var cantidad_a_agregar = parseInt($('input[name="facturacion_prodcant"]').val()) || 0;
 
-  if (idprod != "" && cantidad != "" && cantidad > 0) {
+  if (idprod != "" && cantidad_a_agregar > 0) {
     $("#btn-add-prodtofactura").prop("disabled", true);
-    tbl_prodfactura
-      .rows(function (idx, data, node) {
-        old_importe = data[6];
-        old_cantidad = parseInt(data[5]);
-        if (data[2] === producto) {
-          importe += old_importe;
-          cantidad += old_cantidad;
-        }
-        return data[2] === producto;
-      })
-      .remove()
-      .draw();
 
-    tbl_prodfactura.rows
-      .add([
-        {
-          0: idprod,
-          1: cod_prod,
-          2: producto,
-          3: descripcion,
-          4: precio.toFixed(2),
-          5: cantidad,
-          6: importe.toFixed(2),
-        },
-      ])
-      .draw();
+    var existing_row = tbl_prodfactura
+      .rows()
+      .data()
+      .toArray()
+      .find((row) => row[0] == idprod);
 
-    tbl_data = tbl_prodfactura.rows().data().toArray();
+    if (existing_row) {
+      // Si el producto ya existe, actualiza la cantidad y el importe
+      tbl_prodfactura
+        .rows(function (idx, data, node) {
+          return data[0] == idprod;
+        })
+        .every(function () {
+          var d = this.data();
+          var nueva_cantidad = parseInt(d[5]) + cantidad_a_agregar;
+          d[5] = nueva_cantidad;
+          d[6] = (precio * nueva_cantidad).toFixed(2);
+          this.data(d);
+        })
+        .draw(false);
+    } else {
+      // Si es un producto nuevo, lo agrega a la tabla
+      var importe = precio * cantidad_a_agregar;
+      tbl_prodfactura.rows
+        .add([
+          {
+            0: idprod,
+            1: cod_prod,
+            2: producto,
+            3: descripcion,
+            4: precio.toFixed(2),
+            5: cantidad_a_agregar,
+            6: importe.toFixed(2),
+          },
+        ])
+        .draw();
+    }
 
-    opergrab =
-      $('input[name="facturacion_opergrab"]').val() != ""
-        ? $('input[name="facturacion_opergrab"]').val()
-        : 0;
-    importe_totactual = parseFloat(opergrab);
-    importe_totactual += importe_actual;
-    new_igv = importe_totactual * 0.18;
-    new_total = importe_totactual + new_igv;
+    // --- Recalcular totales ---
+    var importe_total_tabla = 0;
+    tbl_prodfactura.rows().data().each(function (value, index) {
+        importe_total_tabla += parseFloat(value[6]);
+    });
 
-    total_temporal = new_total;
+    var new_total = importe_total_tabla;
+    total_temporal = new_total; // Mantener `total_temporal` por si otro código lo usa
 
-    $('input[name="facturacion_opergrab"]').val(importe_totactual.toFixed(2));
-    $('input[name="facturacion_igv"]').val(new_igv.toFixed(2));
+    $('input[name="facturacion_opergrab"]').val(importe_total_tabla.toFixed(2));
+    $('input[name="facturacion_igv"]').val("0.00");
     $('input[name="facturacion_total"]').val(new_total.toFixed(2));
+    
+    // --- Fin de recalcular totales ---
 
     $('input[name="facturacion_prodcant"]').val(0);
     $('input[name="facturacion_prodprecio"]').val(0.0);
+    $('select[name="facturacion_producto"]').val("").trigger("change");
 
     $.Notification.notify(
       "success",
@@ -279,13 +292,10 @@ $("#btn-add-prodtofactura").click(function () {
       "Producto añadido",
       "El producto ha sido agregado a la boleta correctamente"
     );
-
+    
+    var tbl_data = tbl_prodfactura.rows().data().toArray();
     if (tbl_data.length > 0) {
       $("#btn-save-facturaprod").prop("disabled", false);
-      porc_desc =
-        parseFloat($('input[name="facturacion_porcdesc"]').val()) / 100;
-      val_desc = new_total * porc_desc;
-      $('input[name="facturacion_cantdesc"]').val(val_desc.toFixed(3));
     } else {
       $('input[name="facturacion_cantdesc"]').val(0);
       $('input[name="facturacion_porcdesc"]').val(0);
@@ -298,7 +308,7 @@ $("#btn-add-prodtofactura").click(function () {
       "error",
       "bottom-right",
       "Error al añadir",
-      "Seleccione un producto de la lista"
+      "Seleccione un producto y/o ingrese una cantidad válida"
     );
   }
 });
@@ -616,13 +626,12 @@ $("#table-productsfactura").on("dblclick", "tr", function () {
       : 0;
   importe_totactual = parseFloat(opergrab);
   importe_totactual -= importe_prod;
-  new_igv = importe_totactual * 0.18;
-  new_total = importe_totactual + new_igv;
+  new_total = importe_totactual;
 
   total_temporal = new_total;
 
   $('input[name="facturacion_opergrab"]').val(importe_totactual.toFixed(2));
-  $('input[name="facturacion_igv"]').val(new_igv.toFixed(2));
+  $('input[name="facturacion_igv"]').val("0.00");
   $('input[name="facturacion_total"]').val(new_total.toFixed(2));
 
   tbl_prodfactura.rows(tbl_prodfactura.row(this)).remove().draw();
@@ -641,13 +650,8 @@ $("#table-productsfactura").on("dblclick", "tr", function () {
 
   if (tbl_data.length > 0) {
     //$("#btn-save-facturaprod").prop("disabled", false);
-    porc_desc = parseFloat($('input[name="facturacion_porcdesc"]').val()) / 100;
-    val_desc = new_total * porc_desc;
-    $('input[name="facturacion_cantdesc"]').val(val_desc.toFixed(3));
   } else {
     $("#btn-save-facturaprod").prop("disabled", true);
-    $('input[name="facturacion_cantdesc"]').val(0);
-    $('input[name="facturacion_porcdesc"]').val(0);
     total_temporal = 0;
   }
 });
