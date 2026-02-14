@@ -34,7 +34,7 @@ $response = [
 try {
     // 1. Obtener la lista de movimientos para la jornada
     $sql_mov = "SELECT 
-                    mc.fecha, mc.tipo, mc.monto, mc.descripcion,
+                    mc.fecha, mc.tipo, mc.monto, mc.descripcion, mc.metodo_pago,
                     u.username AS usuario_nombre 
                 FROM movimientos_caja mc 
                 LEFT JOIN tbl_user u ON mc.usuario_id = u.id 
@@ -50,7 +50,8 @@ try {
     $resumen = [
         'TotalIngreso' => 0.00,
         'TotalEgreso' => 0.00,
-        'TotalCaja' => 0.00
+        'TotalCaja' => 0.00,
+        'TotalMercadoPago' => 0.00
     ];
 
     // Obtener el monto inicial de la tabla de jornadas
@@ -64,7 +65,8 @@ try {
     // Calcular totales de movimientos de ingreso y egreso
     $sql_resumen = "SELECT 
         SUM(CASE WHEN tipo = 'INGRESO' THEN monto ELSE 0 END) AS TotalIngresosMov, 
-        SUM(CASE WHEN tipo = 'EGRESO' THEN monto ELSE 0 END) AS TotalEgresosMov
+        SUM(CASE WHEN tipo = 'EGRESO' THEN monto ELSE 0 END) AS TotalEgresosMov,
+        SUM(CASE WHEN tipo = 'INGRESO' AND metodo_pago = 'MERCADOPAGO' THEN monto ELSE 0 END) AS TotalMercadoPago
     FROM movimientos_caja WHERE jornada_id = :jornada_id AND tipo IN ('INGRESO', 'EGRESO')";
 
     $stmt_res = $pdo->prepare($sql_resumen);
@@ -74,10 +76,14 @@ try {
 
     $ingresos_mov = $totales_mov ? (float)($totales_mov['TotalIngresosMov'] ?? 0) : 0;
     $egresos_mov = $totales_mov ? (float)($totales_mov['TotalEgresosMov'] ?? 0) : 0;
+    $mercadopago_mov = $totales_mov ? (float)($totales_mov['TotalMercadoPago'] ?? 0) : 0;
 
     $resumen['TotalIngreso'] = $monto_inicial + $ingresos_mov;
     $resumen['TotalEgreso'] = $egresos_mov;
-    $resumen['TotalCaja'] = $resumen['TotalIngreso'] - $resumen['TotalEgreso'];
+    $resumen['TotalMercadoPago'] = $mercadopago_mov;
+    
+    // Total Caja (Efectivo) = (Inicial + Ingresos Totales) - Egresos - Ingresos MP
+    $resumen['TotalCaja'] = ($resumen['TotalIngreso'] - $resumen['TotalEgreso']) - $mercadopago_mov;
     
     // 3. Preparar la respuesta final
     $response = [

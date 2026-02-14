@@ -30,6 +30,7 @@ if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQ
             $v_clidirecc = trim($_POST['vrapida_clidirecc']);
             $v_tipmon = $_POST['vrapida_tipmon'];
             $v_formpago = $_POST['vrapida_formpago'];
+            $v_mediopago = $_POST['vrapida_mediopago'] ?? 'CONTADO';
             
             $v_opergrab = $_POST['vrapida_opergrab'];
             $v_igv = $_POST['vrapida_igv'] ?? 0.00;
@@ -98,9 +99,9 @@ if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQ
 
             // Registrar movimiento de ingreso en caja
             $descripcion_caja = "Ingreso por Venta Rápida: " . $v_series . "-" . $v_numero;
-            $sql_mov = "INSERT INTO movimientos_caja (fecha, tipo, monto, descripcion, usuario_id, jornada_id, metodo_pago) VALUES (NOW(), 'INGRESO', ?, ?, ?, ?, 'CONTADO')";
+            $sql_mov = "INSERT INTO movimientos_caja (fecha, tipo, monto, descripcion, usuario_id, jornada_id, metodo_pago) VALUES (NOW(), 'INGRESO', ?, ?, ?, ?, ?)";
             $stmt_mov = $pdo->prepare($sql_mov);
-            $stmt_mov->execute([$v_total, $descripcion_caja, $v_user_id, $jornada_id_actual]);
+            $stmt_mov->execute([$v_total, $descripcion_caja, $v_user_id, $jornada_id_actual, $v_mediopago]);
 
             echo "OK_INSERT";
 

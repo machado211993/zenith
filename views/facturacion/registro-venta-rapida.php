@@ -66,24 +66,18 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-md-3">
+                                <!-- Tipo de Moneda por defecto: MN -->
+                                <input type="hidden" name="vrapida_tipmon" value="MN">
+                                
+                                <!-- Forma de Pago por defecto: Contado (0) -->
+                                <input type="hidden" name="vrapida_formpago" value="0">
+                                
+                                <div class="col-md-12">
                                     <div class="form-group">
-                                        <label>Tipo de Moneda</label>
-                                        <select name="vrapida_tipmon" class="form-control" required>
-                                            <option value="MN" selected>Moneda Nacional</option>
-                                            <option value="ME">Moneda Extranjera</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label>Forma de Pago</label>
-                                        <select name="vrapida_formpago" class="form-control" required>
-                                            <option value="0" selected>Contado</option>
-                                            <option value="15">15 días</option>
-                                            <option value="30">30 días</option>
-                                            <option value="45">45 días</option>
-                                            <option value="60">60 días</option>
+                                        <label>Medio de Pago</label>
+                                        <select name="vrapida_mediopago" class="form-control" required>
+                                            <option value="EFECTIVO" selected>Efectivo / Contado</option>
+                                            <option value="MERCADOPAGO">Mercado Pago</option>
                                         </select>
                                     </div>
                                 </div>

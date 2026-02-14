@@ -36,7 +36,7 @@
                     <h4 class="mb-3">Jornada Actual: <span id="jornada_actual" class="badge badge-info">Cargando...</span></h4>
                 </div>
                 
-                <div class="col-lg-4 col-6">
+                <div class="col-lg-3 col-6">
                     <div class="small-box bg-success">
                         <div class="inner">
                             <h3 id="total_ingreso">$ 0.00</h3>
@@ -46,7 +46,7 @@
                     </div>
                 </div>
                 
-                <div class="col-lg-4 col-6">
+                <div class="col-lg-3 col-6">
                     <div class="small-box bg-danger">
                         <div class="inner">
                             <h3 id="total_egreso">$ 0.00</h3>
@@ -56,13 +56,23 @@
                     </div>
                 </div>
                 
-                <div class="col-lg-4 col-12">
+                <div class="col-lg-3 col-6">
                     <div class="small-box bg-primary">
                         <div class="inner">
                             <h3 id="total_caja">$ 0.00</h3>
-                            <p>Saldo Total en Caja</p>
+                            <p>Efectivo en Caja</p>
                         </div>
                         <div class="icon"><i class="fas fa-wallet"></i></div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-info">
+                        <div class="inner">
+                            <h3 id="total_mercadopago">$ 0.00</h3>
+                            <p>Mercado Pago</p>
+                        </div>
+                        <div class="icon"><i class="fas fa-mobile-alt"></i></div>
                     </div>
                 </div>
             </div>
