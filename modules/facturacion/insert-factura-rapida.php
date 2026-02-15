@@ -43,7 +43,8 @@ if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQ
             $v_fecreg = date("Y-m-d H:i:s");
             
             $v_estado = 1; // Vigente
-            $v_cliente_id = 0; // Cliente genérico
+            // Obtener ID de cliente del POST, si no existe (versiones viejas), usar 0
+            $v_cliente_id = isset($_POST['vrapida_cliente_id']) ? $_POST['vrapida_cliente_id'] : 0; 
             $v_fecha_entrega = $v_fecha;
             $v_desc_rate = 0;
             $v_desc_val = 0;
@@ -97,8 +98,22 @@ if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQ
                 }
             }
 
-            // Registrar movimiento de ingreso en caja
-            $descripcion_caja = "Ingreso por Venta Rápida: " . $v_series . "-" . $v_numero;
+            // Lógica específica para Cuenta Corriente
+            if ($v_mediopago === 'CTA_CTE') {
+                // 1. Registrar deuda en tabla de cuenta corriente
+                // Asumimos tabla: cta_cte_movimientos (id, cliente_id, fecha, tipo, monto, descripcion, referencia_id)
+                // Tipo: 1 = Deuda (Venta), 2 = Pago (Abono)
+                $sql_cc = "INSERT INTO cta_cte_movimientos (cliente_id, fecha, tipo, monto, descripcion, referencia_id) VALUES (?, NOW(), 'DEUDA', ?, ?, ?)";
+                $stmt_cc = $pdo->prepare($sql_cc);
+                $desc_cc = "Venta Rápida " . $v_series . "-" . $v_numero;
+                $stmt_cc->execute([$v_cliente_id, $v_total, $desc_cc, $id_factura]);
+                
+                $descripcion_caja = "Venta Cta. Cte.: " . $v_series . "-" . $v_numero . " (Cliente ID: $v_cliente_id)";
+            } else {
+                $descripcion_caja = "Ingreso por Venta Rápida: " . $v_series . "-" . $v_numero;
+            }
+
+            // Registrar movimiento en caja (Se registra igual, pero el metodo_pago permitirá filtrar en el reporte)
             $sql_mov = "INSERT INTO movimientos_caja (fecha, tipo, monto, descripcion, usuario_id, jornada_id, metodo_pago) VALUES (NOW(), 'INGRESO', ?, ?, ?, ?, ?)";
             $stmt_mov = $pdo->prepare($sql_mov);
             $stmt_mov->execute([$v_total, $descripcion_caja, $v_user_id, $jornada_id_actual, $v_mediopago]);

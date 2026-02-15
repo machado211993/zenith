@@ -32,7 +32,6 @@
       </div>
 
       <div class="row">
-
         <!-- Venta Rápida (Prioridad Alta) -->
         <div class="col-lg-4 col-6">
           <div class="small-box bg-success">
@@ -49,9 +48,43 @@
           </div>
         </div>
 
-        <!-- Caja Chica -->
+        <!-- Cta. Cte. (Nuevo Módulo) -->
+        <div class="col-lg-4 col-6">
+          <div class="small-box bg-primary">
+            <div class="inner">
+              <h3>Cta. Cte.</h3>
+              <p>Gestión de Créditos</p>
+            </div>
+            <div class="icon">
+              <i class="fas fa-hand-holding-usd"></i>
+            </div>
+            <a href="<?php echo $functions->direct_paginas()."ctacte/gestion-ctacte" ?>" class="small-box-footer">
+              Gestionar Cuentas <i class="fas fa-arrow-circle-right"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Resumen de Facturas (Historial) -->
         <div class="col-lg-4 col-6">
           <div class="small-box bg-info">
+            <div class="inner">
+              <h3>Historial</h3>
+              <p>Resumen de Facturas</p>
+            </div>
+            <div class="icon">
+              <i class="fas fa-file-invoice"></i>
+            </div>
+            <a href="<?php echo $functions->direct_paginas()."facturacion/resumen-facturas" ?>" class="small-box-footer">
+              Ver Movimientos <i class="fas fa-arrow-circle-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- Caja Chica -->
+        <div class="col-lg-6 col-6">
+          <div class="small-box bg-secondary">
             <div class="inner">
               <h3>Caja Chica</h3>
               <p>Apertura / Cierre / Movimientos</p>
@@ -66,7 +99,7 @@
         </div>
 
         <!-- Caja Consulta -->
-        <div class="col-lg-4 col-6">
+        <div class="col-lg-6 col-6">
           <div class="small-box bg-warning">
             <div class="inner">
               <h3>Consulta Caja</h3>
@@ -82,41 +115,6 @@
         </div>
       </div>
       <!-- /.row -->
-
-      <!-- Accesos Secundarios -->
-      <div class="row">
-          <div class="col-md-12">
-            <div class="card card-outline card-primary">
-                <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-th"></i> Otros Accesos</h3>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-3 col-sm-6 col-12 mb-2">
-                            <a href="<?php echo $functions->direct_paginas()."clientes/registro-cliente" ?>" class="btn btn-default btn-block text-left">
-                                <i class="fas fa-users text-primary"></i>&nbsp; Clientes
-                            </a>
-                        </div>
-                        <div class="col-md-3 col-sm-6 col-12 mb-2">
-                            <a href="<?php echo $functions->direct_paginas()."productos/listado-producto" ?>" class="btn btn-default btn-block text-left">
-                                <i class="fas fa-boxes text-success"></i>&nbsp; Productos
-                            </a>
-                        </div>
-                        <div class="col-md-3 col-sm-6 col-12 mb-2">
-                            <a href="<?php echo $functions->direct_paginas()."facturacion/registro-factura" ?>" class="btn btn-default btn-block text-left">
-                                <i class="fas fa-file-invoice text-danger"></i>&nbsp; Facturación
-                            </a>
-                        </div>
-                        <div class="col-md-3 col-sm-6 col-12 mb-2">
-                            <a href="<?php echo $functions->direct_paginas()."facturacion/resumen-facturas" ?>" class="btn btn-default btn-block text-left">
-                                <i class="fas fa-list-alt text-info"></i>&nbsp; Historial
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-          </div>
-      </div>
 
     </div><!-- /.container-fluid -->
   </div>

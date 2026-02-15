@@ -205,6 +205,13 @@
                     </ul>
                 </li>
 
+                <li class="nav-item">
+                    <a id="m_ctacte" href="<?php echo $functions->direct_paginas()."ctacte/gestion-ctacte" ?>" class="nav-link">
+                        <i class="nav-icon fas fa-hand-holding-usd"></i>
+                        <p>Cta. Cte.</p>
+                    </a>
+                </li>
+
                 <li class="nav-header">COMPRAS / SERVICIOS</li>
 
                 <li class="nav-item has-treeview menu-close">

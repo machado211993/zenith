@@ -42,6 +42,110 @@ $('select[name="vrapida_usuario"]').on("change", function () {
   $('input[name="vrapida_usuarioid"]').val($(this).val());
 });
 
+// --- Lógica de Clientes ---
+
+// Cargar clientes en el select2
+function cargarClientes() {
+  $.post("../../modules/clientes/listar-clientes-json.php", function (data) {
+    var clientes = JSON.parse(data);
+    // Asegurar que el cliente genérico esté al principio
+    var options = [
+      {
+        id: "0",
+        text: "Cliente Genérico (Público General)",
+        ruc: "00000000000",
+        address: "Sin dirección",
+      },
+    ];
+
+    // Mapear datos recibidos si es necesario o usarlos directo si el formato es id/text
+    // Asumimos que listar-clientes-json.php devuelve [{id, text, ruc, address}, ...]
+    if (Array.isArray(clientes)) {
+      options = options.concat(clientes);
+    }
+
+    $('select[name="vrapida_cliente_id"]').empty();
+    $('select[name="vrapida_cliente_id"]').select2({
+      data: options,
+      placeholder: "Buscar cliente...",
+      allowClear: false,
+    });
+  });
+}
+cargarClientes();
+
+// Al cambiar cliente, actualizar campos ocultos
+$('select[name="vrapida_cliente_id"]').on("select2:select", function (e) {
+  var data = e.params.data;
+  $("#vrapida_cliruc").val(data.ruc || "00000000000");
+  $("#vrapida_clinom").val(data.text || "Cliente Genérico");
+  $("#vrapida_clidirecc").val(data.address || "Sin dirección");
+});
+
+// Guardar Nuevo Cliente Rápido
+$("#formNewClientRapid").submit(function (e) {
+  e.preventDefault();
+  var formData = $(this).serialize();
+
+  $.post(
+    "../../modules/clientes/insertar-cliente-rapido.php",
+    formData,
+    function (response) {
+      var res = JSON.parse(response);
+      if (res.status == "success") {
+        // Cerrar modal
+        $("#modalNewClient").modal("hide");
+        // Limpiar form
+        $("#formNewClientRapid")[0].reset();
+
+        // Recargar lista y seleccionar el nuevo
+        $.post(
+          "../../modules/clientes/listar-clientes-json.php",
+          function (data) {
+            var clientes = JSON.parse(data);
+            var options = [
+              {
+                id: "0",
+                text: "Cliente Genérico (Público General)",
+                ruc: "00000000000",
+                address: "Sin dirección",
+              },
+            ];
+            options = options.concat(clientes);
+
+            var select = $('select[name="vrapida_cliente_id"]');
+            select.empty().select2({ data: options });
+
+            // Seleccionar el nuevo cliente
+            select.val(res.id).trigger("change");
+            // Disparar evento manual para llenar hidden inputs si es necesario
+            var dataObj = options.find((x) => x.id == res.id);
+            if (dataObj) {
+              $("#vrapida_cliruc").val(dataObj.ruc);
+              $("#vrapida_clinom").val(dataObj.text);
+              $("#vrapida_clidirecc").val(dataObj.address);
+            }
+          },
+        );
+
+        $.Notification.notify(
+          "success",
+          "bottom-right",
+          "Cliente registrado",
+          "El cliente se ha creado correctamente.",
+        );
+      } else {
+        $.Notification.notify(
+          "error",
+          "bottom-right",
+          "Error",
+          "No se pudo registrar el cliente.",
+        );
+      }
+    },
+  );
+});
+
 // Listar productos
 $.post(
   "../../modules/productos/listar-productos-xprov.php",
@@ -51,7 +155,7 @@ $.post(
     $('select[name="vrapida_producto"]').select2({
       data: JSON.parse(data),
     });
-  }
+  },
 );
 
 // Al seleccionar producto
@@ -83,13 +187,13 @@ $('select[name="vrapida_producto"]').on("change", function () {
             "error",
             "bottom-right",
             "Stock agotado",
-            "Producto seleccionado no cuenta con existencias"
+            "Producto seleccionado no cuenta con existencias",
           );
           $("#btn-add-prodtofactura-rapida").prop("disabled", true);
         } else {
           $("#btn-add-prodtofactura-rapida").prop("disabled", false);
         }
-      }
+      },
     );
   } else {
     $('input[name="vrapida_prodcant"]').prop("disabled", true);
@@ -121,7 +225,7 @@ $('input[name="vrapida_prodcant"]').on("change", function () {
           "error",
           "bottom-right",
           "Stock insuficiente",
-          "Producto no cuenta con stock suficiente"
+          "Producto no cuenta con stock suficiente",
         );
       } else {
         $("#btn-add-prodtofactura-rapida").prop("disabled", false);
@@ -135,7 +239,7 @@ $('input[name="vrapida_prodcant"]').on("change", function () {
       "error",
       "bottom-right",
       "Stock insuficiente",
-      "Producto no cuenta con stock suficiente"
+      "Producto no cuenta con stock suficiente",
     );
   }
 });
@@ -203,9 +307,12 @@ $("#btn-add-prodtofactura-rapida").click(function () {
 
     // Recalcular totales generales
     var importe_total_tabla = 0;
-    tbl_prodrapida.rows().data().each(function (value, index) {
-      importe_total_tabla += parseFloat(value[6]);
-    });
+    tbl_prodrapida
+      .rows()
+      .data()
+      .each(function (value, index) {
+        importe_total_tabla += parseFloat(value[6]);
+      });
 
     var new_total = importe_total_tabla; // El total ahora es el subtotal
     total_temporal = new_total;
@@ -224,7 +331,7 @@ $("#btn-add-prodtofactura-rapida").click(function () {
       "success",
       "bottom-right",
       "Producto añadido",
-      "El producto ha sido agregado correctamente"
+      "El producto ha sido agregado correctamente",
     );
 
     var tbl_data = tbl_prodrapida.rows().data().toArray();
@@ -240,7 +347,7 @@ $("#btn-add-prodtofactura-rapida").click(function () {
       "error",
       "bottom-right",
       "Error al añadir",
-      "Seleccione un producto de la lista y/o ingrese una cantidad válida"
+      "Seleccione un producto de la lista y/o ingrese una cantidad válida",
     );
   }
 });
@@ -281,7 +388,7 @@ $("#table-products-rapida").on("dblclick", "tr", function () {
     "success",
     "bottom-right",
     "Producto eliminado",
-    "El producto ha sido eliminado correctamente"
+    "El producto ha sido eliminado correctamente",
   );
 
   if (tbl_data.length == 0) {
@@ -318,12 +425,29 @@ $("#FRM_INSERT_FACTURA_RAPIDA").submit(function (e) {
   var url = form.attr("action");
   tbl_data = tbl_prodrapida.rows().data().toArray();
 
+  // Validar Cta Cte
+  var medio_pago = $('select[name="vrapida_mediopago"]').val();
+  var cliente_id = $('select[name="vrapida_cliente_id"]').val();
+
+  if (
+    medio_pago == "CTA_CTE" &&
+    (cliente_id == "0" || cliente_id == "" || cliente_id == null)
+  ) {
+    $.Notification.notify(
+      "error",
+      "bottom-right",
+      "Error de Cliente",
+      "Para ventas en Cuenta Corriente debe seleccionar un cliente válido (no genérico).",
+    );
+    return;
+  }
+
   if (tbl_data.length == 0) {
     $.Notification.notify(
       "error",
       "bottom-right",
       "Sin productos",
-      "Debe agregar al menos un producto"
+      "Debe agregar al menos un producto",
     );
     return;
   }
@@ -355,7 +479,7 @@ $("#FRM_INSERT_FACTURA_RAPIDA").submit(function (e) {
           "error",
           "top center",
           "Error: Caja Cerrada",
-          "No se puede registrar la venta porque la caja está cerrada. Por favor, inicie una jornada de caja."
+          "No se puede registrar la venta porque la caja está cerrada. Por favor, inicie una jornada de caja.",
         );
         Swal.close();
         return;
@@ -365,7 +489,7 @@ $("#FRM_INSERT_FACTURA_RAPIDA").submit(function (e) {
           "error",
           "bottom-right",
           "Error de guardado",
-          "No se pudo guardar la venta"
+          "No se pudo guardar la venta",
         );
         Swal.close();
       } else if (response == "OK_INSERT") {
@@ -373,7 +497,7 @@ $("#FRM_INSERT_FACTURA_RAPIDA").submit(function (e) {
           "success",
           "bottom-right",
           "Venta guardada",
-          "Venta rápida registrada correctamente"
+          "Venta rápida registrada correctamente",
         );
 
         Swal.close();
@@ -384,11 +508,16 @@ $("#FRM_INSERT_FACTURA_RAPIDA").submit(function (e) {
         }, 1000);
       }
     },
-    error: function(jqXHR, textStatus, errorThrown) {
+    error: function (jqXHR, textStatus, errorThrown) {
       Swal.close(); // ¡Importante! Cerrar el diálogo de carga
-      alert('La petición AJAX falló. Razón: ' + textStatus + '\nError: ' + errorThrown);
+      alert(
+        "La petición AJAX falló. Razón: " +
+          textStatus +
+          "\nError: " +
+          errorThrown,
+      );
       console.log(jqXHR);
-    }
+    },
   });
 });
 
@@ -409,7 +538,7 @@ function buscarCorrelativoRapido() {
       if (data != "" && data != null) {
         $('input[name="vrapida_nro"]').val(data);
       }
-    }
+    },
   );
 }
 

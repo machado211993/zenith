@@ -78,15 +78,34 @@
                                         <select name="vrapida_mediopago" class="form-control" required>
                                             <option value="EFECTIVO" selected>Efectivo / Contado</option>
                                             <option value="MERCADOPAGO">Mercado Pago</option>
+                                            <option value="CTA_CTE">Cuenta Corriente (Crédito)</option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Campos ocultos con valores por defecto -->
-                            <input type="hidden" name="vrapida_cliruc" value="00000000000">
-                            <input type="hidden" name="vrapida_clinom" value="Cliente Genérico">
-                            <input type="hidden" name="vrapida_clidirecc" value="Sin dirección">
+                            <!-- Selección de Cliente -->
+                            <div class="row mt-2">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Cliente</label>
+                                        <div class="input-group">
+                                            <select class="form-control select2" name="vrapida_cliente_id" id="vrapida_cliente_id" style="width: 85%;">
+                                                <option value="0" selected>Cliente Genérico (Público General)</option>
+                                            </select>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-primary" type="button" id="btn-add-client-modal" data-toggle="modal" data-target="#modalNewClient" title="Nuevo Cliente">
+                                                    <i class="fas fa-user-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <!-- Campos ocultos para compatibilidad con insert -->
+                                        <input type="hidden" name="vrapida_cliruc" id="vrapida_cliruc" value="00000000000">
+                                        <input type="hidden" name="vrapida_clinom" id="vrapida_clinom" value="Cliente Genérico">
+                                        <input type="hidden" name="vrapida_clidirecc" id="vrapida_clidirecc" value="Sin dirección">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -215,6 +234,41 @@
                     </div>
 
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nuevo Cliente Rápido -->
+    <div class="modal fade" id="modalNewClient" tabindex="-1" role="dialog" aria-labelledby="modalNewClientLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title" id="modalNewClientLabel">Nuevo Cliente Rápido</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="formNewClientRapid">
+                        <div class="form-group">
+                            <label>RUC / DNI</label>
+                            <input type="text" class="form-control" name="nc_ruc" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Nombre / Razón Social</label>
+                            <input type="text" class="form-control" name="nc_nombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Dirección</label>
+                            <input type="text" class="form-control" name="nc_direccion">
+                        </div>
+                        <div class="form-group">
+                            <label>Teléfono</label>
+                            <input type="text" class="form-control" name="nc_telefono">
+                        </div>
+                        <button type="submit" class="btn btn-success btn-block">Guardar Cliente</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

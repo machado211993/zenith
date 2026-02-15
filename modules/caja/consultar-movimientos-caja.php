@@ -51,7 +51,8 @@ try {
         'TotalIngreso' => 0.00,
         'TotalEgreso' => 0.00,
         'TotalCaja' => 0.00,
-        'TotalMercadoPago' => 0.00
+        'TotalMercadoPago' => 0.00,
+        'TotalCtaCte' => 0.00
     ];
 
     // Obtener el monto inicial de la tabla de jornadas
@@ -66,7 +67,8 @@ try {
     $sql_resumen = "SELECT 
         SUM(CASE WHEN tipo = 'INGRESO' THEN monto ELSE 0 END) AS TotalIngresosMov, 
         SUM(CASE WHEN tipo = 'EGRESO' THEN monto ELSE 0 END) AS TotalEgresosMov,
-        SUM(CASE WHEN tipo = 'INGRESO' AND metodo_pago = 'MERCADOPAGO' THEN monto ELSE 0 END) AS TotalMercadoPago
+        SUM(CASE WHEN tipo = 'INGRESO' AND metodo_pago = 'MERCADOPAGO' THEN monto ELSE 0 END) AS TotalMercadoPago,
+        SUM(CASE WHEN tipo = 'INGRESO' AND metodo_pago = 'CTA_CTE' THEN monto ELSE 0 END) AS TotalCtaCte
     FROM movimientos_caja WHERE jornada_id = :jornada_id AND tipo IN ('INGRESO', 'EGRESO')";
 
     $stmt_res = $pdo->prepare($sql_resumen);
@@ -77,13 +79,15 @@ try {
     $ingresos_mov = $totales_mov ? (float)($totales_mov['TotalIngresosMov'] ?? 0) : 0;
     $egresos_mov = $totales_mov ? (float)($totales_mov['TotalEgresosMov'] ?? 0) : 0;
     $mercadopago_mov = $totales_mov ? (float)($totales_mov['TotalMercadoPago'] ?? 0) : 0;
+    $ctacte_mov = $totales_mov ? (float)($totales_mov['TotalCtaCte'] ?? 0) : 0;
 
     $resumen['TotalIngreso'] = $monto_inicial + $ingresos_mov;
     $resumen['TotalEgreso'] = $egresos_mov;
     $resumen['TotalMercadoPago'] = $mercadopago_mov;
+    $resumen['TotalCtaCte'] = $ctacte_mov;
     
-    // Total Caja (Efectivo) = (Inicial + Ingresos Totales) - Egresos - Ingresos MP
-    $resumen['TotalCaja'] = ($resumen['TotalIngreso'] - $resumen['TotalEgreso']) - $mercadopago_mov;
+    // Total Caja (Efectivo) = (Inicial + Ingresos Totales) - Egresos - Ingresos MP - Ingresos CtaCte
+    $resumen['TotalCaja'] = ($resumen['TotalIngreso'] - $resumen['TotalEgreso']) - $mercadopago_mov - $ctacte_mov;
     
     // 3. Preparar la respuesta final
     $response = [

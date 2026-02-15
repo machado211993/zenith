@@ -72,6 +72,7 @@ function cargarDatosJornada(jornadaId) {
   document.getElementById("total_egreso").textContent = "$ 0.00";
   document.getElementById("total_caja").textContent = "$ 0.00";
   document.getElementById("total_mercadopago").textContent = "$ 0.00";
+  document.getElementById("total_ctacte").textContent = "$ 0.00";
   const tbody = document
     .getElementById("tabla_movimientos_caja")
     .querySelector("tbody");
@@ -95,6 +96,8 @@ function cargarDatosJornada(jornadaId) {
           `$ ${parseFloat(resumen.TotalCaja || 0).toFixed(2)}`;
         document.getElementById("total_mercadopago").textContent =
           `$ ${parseFloat(resumen.TotalMercadoPago || 0).toFixed(2)}`;
+        document.getElementById("total_ctacte").textContent =
+          `$ ${parseFloat(resumen.TotalCtaCte || 0).toFixed(2)}`;
 
         actualizarTablaMovimientos(data.data.movimientos);
       } else {
@@ -134,6 +137,9 @@ function actualizarTablaMovimientos(movimientos) {
       // Lógica de colores
       if (mov.metodo_pago === "MERCADOPAGO") {
         row.className = "table-primary text-primary"; // Azul para Mercado Pago
+        row.style.fontWeight = "bold";
+      } else if (mov.metodo_pago === "CTA_CTE") {
+        row.className = "table-warning text-dark"; // Amarillo para Cta Cte
         row.style.fontWeight = "bold";
       } else if (mov.tipo === "INGRESO" || mov.tipo === "INICIO") {
         row.className = "table-success";
