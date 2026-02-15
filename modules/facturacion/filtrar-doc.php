@@ -79,7 +79,7 @@ if ($defaultLoad == 1){
     $limitString = "LIMIT 50";
 }
 
-$sqlStatement = $pdo->prepare("SELECT ti.id AS DOC_ID, ti.series AS DOC_SERIES, ti.number AS DOC_NUMBER, ti.status AS DOC_STATUS_ID, ti.customer_id AS CUSTOMER_ID, ti.name AS CUSTOMER_NAME, ti.date AS DOC_DATE, ti.total_net AS DOC_TOTAL_NET, ti.seller_id AS SELLER_ID, (SELECT CONCAT(e.last_name_1, ' ', e.last_name_2, ', ', e.name) FROM tbl_user u JOIN tbl_employee e ON u.employee_id = e.id WHERE u.id = ti.seller_id) AS SELLER_NAME FROM " . $table . " ti " . $COND_COMP . " ORDER BY ti.id DESC " . $limitString);
+$sqlStatement = $pdo->prepare("SELECT ti.id AS DOC_ID, ti.series AS DOC_SERIES, ti.number AS DOC_NUMBER, ti.status AS DOC_STATUS_ID, ti.customer_id AS CUSTOMER_ID, ti.name AS CUSTOMER_NAME, ti.date AS DOC_DATE, ti.total_net AS DOC_TOTAL_NET, ti.seller_id AS SELLER_ID, (SELECT CONCAT(e.last_name_1, ' ', e.last_name_2, ', ', e.name) FROM tbl_user u JOIN tbl_employee e ON u.employee_id = e.id WHERE u.id = ti.seller_id) AS SELLER_NAME, (SELECT metodo_pago FROM movimientos_caja WHERE descripcion LIKE CONCAT('%', ti.series, '-', ti.number, '%') ORDER BY id DESC LIMIT 1) AS PAYMENT_METHOD FROM " . $table . " ti " . $COND_COMP . " ORDER BY ti.id DESC " . $limitString);
 
 $sqlStatement->execute();
 
@@ -108,6 +108,7 @@ if ($rowsNumber > 0) {
         }
 
         $DOC['SELLER_NAME'] = $ROW["SELLER_NAME"];
+        $DOC['PAYMENT_METHOD'] = $ROW["PAYMENT_METHOD"] ?? '-';
         
         /*
         $DOC['SELLER_ID'] = $ROW["SELLERID"];

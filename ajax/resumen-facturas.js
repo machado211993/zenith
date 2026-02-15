@@ -51,7 +51,7 @@ $('input[name="factura_cliente"]').autocomplete({
       {
         cotiz_nomcliente: $('input[name="factura_cliente"]').val(),
       },
-      response
+      response,
     );
   },
   select: function (event, ui) {
@@ -70,7 +70,7 @@ $('input[name="factura_fecini"], input[name="factura_fecfin"]').on(
       fecfin = $('input[name="factura_fecfin"]');
       rango_dias = moment.range(
         moment(fecinic.val()).format("YYYY-MM-DD"),
-        moment(fecfin.val()).format("YYYY-MM-DD")
+        moment(fecfin.val()).format("YYYY-MM-DD"),
       );
       dif_days = rango_dias.diff("days");
 
@@ -82,7 +82,7 @@ $('input[name="factura_fecini"], input[name="factura_fecfin"]').on(
         //OK
         rango_dias = moment.range(
           moment(fecfin.val()).format("YYYY-MM-DD"),
-          moment(fecinic.val()).format("YYYY-MM-DD")
+          moment(fecinic.val()).format("YYYY-MM-DD"),
         );
         if (dif_days < 0) {
           new_date = moment(fecinic.val()).add(1, "day");
@@ -90,7 +90,7 @@ $('input[name="factura_fecini"], input[name="factura_fecfin"]').on(
         }
       }
     }
-  }
+  },
 );
 
 $('input[name="factura_fecini"]').on("change", function () {
@@ -145,7 +145,7 @@ $("#table-facturas").contextMenu({
                       "success",
                       "bottom-right",
                       "Factura Vigente",
-                      "La factura " + data_row[1] + " fue marcada con éxito"
+                      "La factura " + data_row[1] + " fue marcada con éxito",
                     );
                   } else {
                     $.Notification.notify(
@@ -154,10 +154,10 @@ $("#table-facturas").contextMenu({
                       "Error",
                       "La factura " +
                         data_row[1] +
-                        " no pudo ser marcada como vigente"
+                        " no pudo ser marcada como vigente",
                     );
                   }
-                }
+                },
               );
             }
           });
@@ -183,17 +183,17 @@ $("#table-facturas").contextMenu({
                       "success",
                       "bottom-right",
                       "Factura Anulada",
-                      "La factura " + data_row[1] + " fue anulada con éxito"
+                      "La factura " + data_row[1] + " fue anulada con éxito",
                     );
                   } else {
                     $.Notification.notify(
                       "error",
                       "bottom-right",
                       "Error",
-                      "La factura " + data_row[1] + " no pudo ser anulada"
+                      "La factura " + data_row[1] + " no pudo ser anulada",
                     );
                   }
-                }
+                },
               );
             }
           });
@@ -222,7 +222,7 @@ $("#table-facturas").contextMenu({
                       "success",
                       "bottom-right",
                       "Factura Pendiente de Pago",
-                      "La factura " + data_row[1] + " fue marcada con éxito"
+                      "La factura " + data_row[1] + " fue marcada con éxito",
                     );
                   } else {
                     $.Notification.notify(
@@ -231,10 +231,10 @@ $("#table-facturas").contextMenu({
                       "Error",
                       "La factura " +
                         data_row[1] +
-                        " no pudo ser marcada como pendiente de pago"
+                        " no pudo ser marcada como pendiente de pago",
                     );
                   }
-                }
+                },
               );
             }
           });
@@ -263,17 +263,17 @@ $("#table-facturas").contextMenu({
                       "success",
                       "bottom-right",
                       "Factura Cancelada",
-                      "La factura " + data_row[1] + " fue cancelada con éxito"
+                      "La factura " + data_row[1] + " fue cancelada con éxito",
                     );
                   } else {
                     $.Notification.notify(
                       "error",
                       "bottom-right",
                       "Error",
-                      "La factura " + data_row[1] + " no pudo ser cancelada"
+                      "La factura " + data_row[1] + " no pudo ser cancelada",
                     );
                   }
-                }
+                },
               );
             }
           });
@@ -341,23 +341,22 @@ function listarDocumentos(loadMode) {
       tbl_facturas.clear().draw();
       data_factura = JSON.parse(data);
       for (i = 0; i < data_factura.length; i++) {
-        tbl_facturas.rows
-          .add([
-            {
-              0: data_factura[i]["ID"],
-              1: data_factura[i]["SERIES_NUMBER"],
-              2: data_factura[i]["DATE"],
-              3: data_factura[i]["CUSTOMER"],
-              4: data_factura[i]["TOTAL_NET"],
-              5: data_factura[i]["STATUS"],
-              6: data_factura[i]["SELLER_NAME"],
-            },
-          ])
-          .draw();
-
-        tbl_facturas.columns.adjust().draw();
+        tbl_facturas.rows.add([
+          {
+            0: data_factura[i]["ID"],
+            1: data_factura[i]["SERIES_NUMBER"],
+            2: data_factura[i]["DATE"],
+            3: data_factura[i]["CUSTOMER"],
+            4: data_factura[i]["TOTAL_NET"],
+            5: data_factura[i]["STATUS"],
+            6: data_factura[i]["SELLER_NAME"],
+            7: data_factura[i]["PAYMENT_METHOD"] || "-",
+          },
+        ]);
       }
-    }
+      tbl_facturas.draw();
+      tbl_facturas.columns.adjust().draw();
+    },
   ).then(function () {
     Swal.close();
   });

@@ -104,6 +104,7 @@
                                         <th>Total Neto</th>
                                         <th>Estado</th>
                                         <th>Vendedor</th>
+                                        <th>Medio de Pago</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
