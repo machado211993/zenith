@@ -43,7 +43,7 @@ function listarCuentas(search = "") {
                     <td class="text-right font-weight-bold ${colorSaldo}">$ ${saldo.toFixed(2)}</td>
                     <td class="text-center">
                         <button class="btn btn-sm btn-info" onclick="verDetalle(${acc.client_id})" title="Ver Detalle"><i class="fas fa-eye"></i></button>
-                        <button class="btn btn-sm btn-success" onclick="registrarPago(${acc.client_id})" title="Registrar Pago"><i class="fas fa-money-bill-wave"></i></button>
+                        <button class="btn btn-sm btn-success" onclick="registrarPago(${acc.client_id}, '${acc.business_name.replace(/'/g, "\\'")}')" title="Registrar Pago"><i class="fas fa-money-bill-wave"></i></button>
                     </td>
                 </tr>`;
           tbody.append(row);
@@ -62,6 +62,50 @@ function verDetalle(id) {
   alert("Aquí se mostrará el detalle de movimientos del cliente ID: " + id);
 }
 
-function registrarPago(id) {
-  alert("Aquí se abrirá el modal para registrar pago del cliente ID: " + id);
+function registrarPago(id, nombre) {
+  $("#formRegistrarPago")[0].reset();
+  $("#pago_cliente_id").val(id);
+  $("#pago_cliente_nombre").val(nombre);
+  $("#modalRegistrarPago").modal("show");
 }
+
+// Enviar formulario de pago
+$("#formRegistrarPago").submit(function (e) {
+  e.preventDefault();
+  var formData = $(this).serialize();
+
+  $.ajax({
+    type: "POST",
+    url: "../../modules/clientes/insertar-abono.php",
+    data: formData,
+    dataType: "json",
+    beforeSend: function () {
+      Swal.fire({
+        html: "<h4>Procesando pago...</h4>",
+        allowOutsideClick: false,
+        onBeforeOpen: () => {
+          Swal.showLoading();
+        },
+      });
+    },
+    success: function (response) {
+      Swal.close();
+      if (response.status === "success") {
+        $("#modalRegistrarPago").modal("hide");
+        $.Notification.notify(
+          "success",
+          "bottom-right",
+          "Pago Registrado",
+          response.message,
+        );
+        listarCuentas(); // Recargar tabla
+      } else {
+        Swal.fire("Error", response.message, "error");
+      }
+    },
+    error: function () {
+      Swal.close();
+      Swal.fire("Error", "Ocurrió un error de conexión", "error");
+    },
+  });
+});

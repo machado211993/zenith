@@ -63,3 +63,45 @@
         </div>
     </section>
 </div>
+
+<!-- Modal Registrar Pago -->
+<div class="modal fade" id="modalRegistrarPago" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success">
+                <h5 class="modal-title text-white"><i class="fas fa-money-bill-wave"></i> Registrar Pago / Abono</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formRegistrarPago">
+                <div class="modal-body">
+                    <input type="hidden" name="pago_cliente_id" id="pago_cliente_id">
+                    <div class="form-group">
+                        <label>Cliente</label>
+                        <input type="text" class="form-control" id="pago_cliente_nombre" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Monto a Abonar ($)</label>
+                        <input type="number" step="0.01" min="0.01" class="form-control" name="pago_monto" required placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Método de Pago</label>
+                        <select class="form-control" name="pago_metodo" required>
+                            <option value="EFECTIVO">Efectivo</option>
+                            <option value="TRANSFERENCIA">Transferencia Bancaria</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción / Referencia</label>
+                        <textarea class="form-control" name="pago_descripcion" rows="2" placeholder="Ej: Pago a cuenta, Nro Operación..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Registrar Pago</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

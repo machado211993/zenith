@@ -56,7 +56,7 @@
                     </div>
                 </div>
                 
-                <div class="col-lg-3 col-6">
+                <div class="col-lg-2 col-6">
                     <div class="small-box bg-primary">
                         <div class="inner">
                             <h3 id="total_caja">$ 0.00</h3>
@@ -76,13 +76,23 @@
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-6">
+                <div class="col-lg-2 col-6">
                     <div class="small-box bg-warning">
                         <div class="inner">
                             <h3 id="total_ctacte" style="color: white;">$ 0.00</h3>
                             <p style="color: white;">Ventas Cta. Cte.</p>
                         </div>
                         <div class="icon"><i class="fas fa-mobile-alt"></i></div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-6">
+                    <div class="small-box" style="background-color: #6f42c1; color: white;">
+                        <div class="inner">
+                            <h3 id="total_transferencia">$ 0.00</h3>
+                            <p>Transferencias</p>
+                        </div>
+                        <div class="icon"><i class="fas fa-university"></i></div>
                     </div>
                 </div>
             </div>
