@@ -1,3 +1,29 @@
+<?php
+// --- Lógica para verificar estado de Caja ---
+require_once __DIR__ . '/../global/connection.php';
+
+$caja_estado = 'CERRADA';
+$caja_color = 'danger'; // Rojo por defecto
+$caja_icono = 'fa-lock';
+$caja_mensaje = 'La caja se encuentra CERRADA. Debe abrirla para realizar operaciones.';
+$caja_boton = 'Abrir Caja Ahora';
+
+try {
+    if (isset($pdo)) {
+        $stmt = $pdo->prepare("SELECT estado FROM caja_jornadas ORDER BY id DESC LIMIT 1");
+        $stmt->execute();
+        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($resultado && $resultado['estado'] === 'ABIERTA') {
+            $caja_estado = 'ABIERTA';
+            $caja_color = 'success'; // Verde
+            $caja_icono = 'fa-cash-register';
+            $caja_mensaje = 'La caja está ABIERTA y operativa.';
+            $caja_boton = 'Ir a Caja';
+        }
+    }
+} catch (Exception $e) {}
+?>
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
   <!-- Content Header (Page header) -->
@@ -27,6 +53,17 @@
             <div class="callout callout-info">
                 <h5><i class="fas fa-user-circle"></i> ¡Hola, <?php echo $_SESSION['loggedInUser']['EMPLOYEE_NAME']; ?>!</h5>
                 <p>Bienvenido al sistema Zenith. Aquí tienes los accesos rápidos para tu gestión diaria.</p>
+            </div>
+
+            <!-- ALERTA DE ESTADO DE CAJA -->
+            <div class="alert alert-<?php echo $caja_color; ?> alert-dismissible">
+                <h5><i class="icon fas <?php echo $caja_icono; ?>"></i> Estado de Caja: <b><?php echo $caja_estado; ?></b></h5>
+                <p class="mb-0">
+                    <?php echo $caja_mensaje; ?>
+                    <a href="<?php echo $functions->direct_paginas()."caja/caja-chica" ?>" class="btn btn-light btn-sm text-<?php echo $caja_color; ?> font-weight-bold ml-3" style="text-decoration: none;">
+                        <?php echo $caja_boton; ?> <i class="fas fa-arrow-right"></i>
+                    </a>
+                </p>
             </div>
         </div>
       </div>
