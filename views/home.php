@@ -83,7 +83,7 @@
 
       <div class="row">
         <!-- Caja Chica -->
-        <div class="col-lg-6 col-6">
+        <div class="col-lg-4 col-6">
           <div class="small-box bg-secondary">
             <div class="inner">
               <h3>Caja Chica</h3>
@@ -99,7 +99,7 @@
         </div>
 
         <!-- Caja Consulta -->
-        <div class="col-lg-6 col-6">
+        <div class="col-lg-4 col-6">
           <div class="small-box bg-warning">
             <div class="inner">
               <h3>Consulta Caja</h3>
@@ -110,6 +110,22 @@
             </div>
             <a href="<?php echo $functions->direct_paginas()."caja/caja-consulta" ?>" class="small-box-footer">
               Ver Reporte <i class="fas fa-arrow-circle-right"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Listado de Productos -->
+        <div class="col-lg-4 col-6">
+          <div class="small-box bg-danger">
+            <div class="inner">
+              <h3>Inventario</h3>
+              <p>Listado de Productos</p>
+            </div>
+            <div class="icon">
+              <i class="fas fa-boxes"></i>
+            </div>
+            <a href="<?php echo $functions->direct_paginas()."productos/listado-producto" ?>" class="small-box-footer">
+              Ver Inventario <i class="fas fa-arrow-circle-right"></i>
             </a>
           </div>
         </div>

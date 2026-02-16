@@ -47,33 +47,7 @@
   <!-- Navbar -->
   <nav class="main-header navbar navbar-expand navbar-dark">
     
-    <!-- Left navbar links -->
-    <ul class="navbar-nav">
-
-      <li class="nav-item">
-        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-      </li>
-
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="<?php echo $functions->direct_paginas()."home" ?>" class="nav-link">Inicio</a>
-      </li>
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="<?php echo $functions->direct_paginas()."clientes/registro-cliente" ?>" class="nav-link">Clientes</a>
-      </li>
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="<?php echo $functions->direct_paginas()."productos/listado-producto" ?>" class="nav-link">Listado de Productos</a>
-      </li>
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="<?php echo $functions->direct_paginas()."facturacion/registro-factura" ?>" class="nav-link">Factura</a>
-      </li>
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="<?php echo $functions->direct_paginas()."facturacion/registro-boleta" ?>" class="nav-link">Boleta</a>
-      </li>
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="<?php echo $functions->direct_paginas()."facturacion/registro-nota-credito" ?>" class="nav-link">Nota de Crédito</a>
-      </li>
-
-    </ul>
+    
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
